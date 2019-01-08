@@ -26,17 +26,32 @@ self.addEventListener('activate', function(e) {
     return self.clients.claim();
 });
 
-self.addEventListener('fetch', function(e) {
-    var request = e.request;
+self.addEventListener('fetch', fetchEventHandler);
 
-    e.respondWith(
+function fetchEventHandler(event) {
+    var request = event.request;
+
+    event.respondWith(
         caches.match(request)
             .then(function(response) {
                 if (response) {
                     return response;
                 } else {
-                    return fetch(request);
+                    return fetchRequest(request);
                 }
             })
-    )    
-});
+    )
+}
+
+function fetchRequest(request) {
+    return fetch(request).then(function(response) {
+        return storeInDynamicCache(request, response);
+    });
+}
+
+function storeInDynamicCache(request, response) {
+    return caches.open('dynamic').then(function(cache) {
+        cache.put(request.url, response.clone())
+        return response;            
+    })
+}
