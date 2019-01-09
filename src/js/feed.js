@@ -16,35 +16,55 @@
 
   closeCreatePostModalButton.addEventListener('click', closeCreatePostModal);
 
-  function createCard() {
+  function createCard(cardData) {
     var cardWrapper = document.createElement('div');
     cardWrapper.className = 'shared-moment-card mdl-card mdl-shadow--2dp';
     var cardTitle = document.createElement('div');
     cardTitle.className = 'mdl-card__title';
-    cardTitle.style.backgroundImage = 'url("/src/images/sf-boat.jpg")';
+    cardTitle.style.backgroundImage = 'url(' + cardData.image + ')';
     cardTitle.style.backgroundSize = 'cover';
     cardTitle.style.height = '180px';
     cardWrapper.appendChild(cardTitle);
     var cardTitleTextElement = document.createElement('h2');
     cardTitleTextElement.className = 'mdl-card__title-text';
-    cardTitleTextElement.textContent = 'San Francisco Trip';
+    cardTitleTextElement.textContent = cardData.title;
     cardTitle.appendChild(cardTitleTextElement);
     var cardSupportingText = document.createElement('div');
     cardSupportingText.className = 'mdl-card__supporting-text';
-    cardSupportingText.textContent = 'In San Francisco';
+    cardSupportingText.textContent = cardData.location;
     cardSupportingText.style.textAlign = 'center';
     cardWrapper.appendChild(cardSupportingText);
     componentHandler.upgradeElement(cardWrapper);
     sharedMomentsArea.appendChild(cardWrapper);
   }
-  
-  // Stub request
-  fetch('https://httpbin.org/get')
+
+  fetch('https://pwagram-8fd0d.firebaseio.com/posts.json')
     .then(function(res) {
       return res.json();
     })
     .then(function(data) {
-      createCard();
+      updateUi(normalizeData(data));
     });
+
+  function updateUi(data) {
+    for (const cardData of data) {
+      createCard(cardData);
+    }
+  }
+
+  function normalizeData(dataObject) {
+    const arrayData = [];
+
+    for (const key in dataObject) {
+      if (dataObject.hasOwnProperty(key)) {
+        const element = dataObject[key];
+        
+        arrayData.push(element);
+      }
+    }
+
+    return arrayData;
+  }
+    
   
 })();
