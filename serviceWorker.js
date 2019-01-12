@@ -1,11 +1,11 @@
 importScripts('/src/js/idb.js');
 importScripts('/src/js/idbHelper.js');
+importScripts('/src/js/requestHelper.js');
 
 var STATIC_FILES = [
 	'/',
 	'/index.html',
 	'/src/js/app.js',
-	'/src/js/idb.js',
 	'/src/js/feed.js',
 	'/src/js/material.min.js',
 	'/src/css/app.css',
@@ -18,7 +18,7 @@ var STATIC_FILES = [
 	'https://fonts.googleapis.com/icon?family=Material+Icons',
 	'https://cdnjs.cloudflare.com/ajax/libs/material-design-lite/1.3.0/material.indigo-pink.min.css'
 ];
-var POSTS_URL = 'https://pwagram-8fd0d.firebaseio.com/posts';
+var POSTS_URL = 'https://pwagram-8fd0d.firebaseio.com/posts.json';
 
 self.addEventListener('install', function(e) {
     e.waitUntil(
@@ -34,6 +34,7 @@ self.addEventListener('activate', function(e) {
 });
 
 self.addEventListener('fetch', fetchEventHandler);
+self.addEventListener('sync', handleSync)
 
 function fetchEventHandler(event) {
     if (event.request.url.indexOf(POSTS_URL) > -1) {
@@ -96,5 +97,22 @@ function storeDataInDb(dataObject) {
 
 			IdbHelper.writeData('posts', element);
 		}
+	}
+}
+
+function handleSync(event) {
+	if (event.tag === 'sync-new-post') {
+		event.waitUntil(
+			IdbHelper.readData('sync-posts')
+				.then(function(postsArray) {
+					postsArray.forEach(function(post) {
+						RequestHelper.postData(POSTS_URL, post).then(function(result) {
+							if (result.ok) {
+								IdbHelper.deleteItem('sync-posts', post.id);
+							}
+						})
+					})
+				})
+		)
 	}
 }
