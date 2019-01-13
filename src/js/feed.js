@@ -7,6 +7,7 @@
 	var titleInput = createPostForm.querySelector('#title');
 	var locationInput = createPostForm.querySelector('#location');
 	var POSTS_URL = 'https://pwagram-8fd0d.firebaseio.com/posts.json';
+	var ADD_POST_URL = 'https://us-central1-pwagram-8fd0d.cloudfunctions.net/addPost';
 	var dummyImage = 'https://firebasestorage.googleapis.com/v0/b/pwagram-8fd0d.appspot.com/o/sf-boat.jpg?alt=media&token=e193da00-08b3-4879-84fe-8d932a8cea04';
 
 	shareImageButton.addEventListener('click', openCreatePostModal);
@@ -117,6 +118,6 @@
 			});
 	}
 	function sendPostData(data) {
-		RequestHelper.postData(POSTS_URL, data);
+		RequestHelper.postData(ADD_POST_URL, data);
 	}
 })();

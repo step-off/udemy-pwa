@@ -19,6 +19,7 @@ var STATIC_FILES = [
 	'https://cdnjs.cloudflare.com/ajax/libs/material-design-lite/1.3.0/material.indigo-pink.min.css'
 ];
 var POSTS_URL = 'https://pwagram-8fd0d.firebaseio.com/posts.json';
+var ADD_POST_URL = 'https://us-central1-pwagram-8fd0d.cloudfunctions.net/addPost';
 
 self.addEventListener('install', function(e) {
     e.waitUntil(
@@ -106,9 +107,11 @@ function handleSync(event) {
 			IdbHelper.readData('sync-posts')
 				.then(function(postsArray) {
 					postsArray.forEach(function(post) {
-						RequestHelper.postData(POSTS_URL, post).then(function(result) {
+						RequestHelper.postData(ADD_POST_URL, post).then(function(result) {
 							if (result.ok) {
-								IdbHelper.deleteItem('sync-posts', post.id);
+								result.json().then(function(data) {
+									IdbHelper.deleteItem('sync-posts', data.id);									
+								})
 							}
 						})
 					})
