@@ -4,7 +4,8 @@
   "description": "A complete guide to PWAs. Building a simple Instagram clone.",
   "main": "index.js",
   "scripts": {
-    "start": "http-server -c-1 -o"
+    "start": "http-server -c-1 -o",
+    "injectManifest": "workbox injectManifest workbox-config.js"
   },
   "keywords": [
     "pwa",
@@ -14,10 +15,11 @@
     "complete",
     "tutorial"
   ],
-  "author": "Maximilian Schwarzmüller",
+  "author": "",
   "license": "ISC",
   "devDependencies": {
-    "http-server": "^0.10.0"
+    "http-server": "^0.10.0",
+    "workbox-cli": "^3.6.3"
   },
   "dependencies": {}
 }
